@@ -21,13 +21,14 @@ line		[\n]
 id		[A-Za-z][A-Za-z0-9]*
 digit		[0-9]
 int		{digit}+
-punc		[\(\),:;]
+punc		[\(\),.:;]
 %%
 
 {ws}		{ ECHO; }
 {comment}	{ ECHO; nextLine();}
 {line}		{ ECHO; nextLine();}
 "<"		{ ECHO; return(RELOP); }
+">"		{ ECHO; return(RELOP); }
 "+"		{ ECHO; return(ADDOP); }
 "*"		{ ECHO; return(MULOP); }
 begin		{ ECHO; return(BEGIN_); }

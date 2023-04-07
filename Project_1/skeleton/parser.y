@@ -1,4 +1,3 @@
-
 %{
 
 #include <string>
@@ -16,81 +15,188 @@ void yyerror(const char* message);
 
 %token IDENTIFIER
 %token INT_LITERAL
+%token REAL_LITERAL
+%token BOOL_LITERAL
+%token REAL
 
-%token ADDOP MULOP RELOP ANDOP
+%token ADDOP
+%token MULOP
+%token REMOP
+%token EXPOP
 
-%token BEGIN_ BOOLEAN END ENDREDUCE FUNCTION INTEGER IS REDUCE RETURNS
+%token RELOP
+%token ANDOP
+%token OROP
+%token NOTOP
+
+%token BEGIN_
+%token BOOLEAN
+%token END
+%token ENDREDUCE
+%token FUNCTION
+%token INTEGER
+%token IS
+%token REDUCE
+%token RETURNS
+
+%token SEMICOLON
+%token IF
+%token THEN
+%token ELSE
+%token ENDIF
+%token CASE
+%token WHEN
+%token OTHERS
+%token ARROW
+%token ENDCASE
 
 %%
 
-function:	
-	function_header optional_variable body ;
-	
-function_header:	
-	FUNCTION IDENTIFIER RETURNS type ';' ;
+/* The grammar goes here */
 
-optional_variable:
-	variable |
-	;
+program:
+    function_declaration
+    | statement
+    ;
 
-variable:
-	IDENTIFIER ':' type IS statement_ ;
+function_declaration:
+    FUNCTION IDENTIFIER parameters RETURNS type body SEMICOLON
+    | error SEMICOLON
+    ;
+
+parameters:
+    '(' parameter_list ')'
+    | error SEMICOLON
+    ;
+
+parameter_list:
+    parameter
+    | parameter ',' parameter_list
+    | error SEMICOLON
+    ;
+
+parameter:
+    IDENTIFIER ':' type
+    | error SEMICOLON
+    ;
 
 type:
-	INTEGER |
-	BOOLEAN ;
+    INTEGER
+    | REAL
+    | BOOLEAN
+    ;
 
 body:
-	BEGIN_ statement_ END ';' ;
-    
-statement_:
-	statement ';' |
-	error ';' ;
-	
+    BEGIN_ statement_list END SEMICOLON
+    ;
+
 statement:
-	expression |
-	REDUCE operator reductions ENDREDUCE ;
+    expression SEMICOLON
+    | reduce_statement
+    | if_statement
+    | case_statement
+    ;
 
-operator:
-	ADDOP |
-	MULOP ;
+reduce_statement:
+    REDUCE operator statement_list ENDREDUCE
+    ;
 
-reductions:
-	reductions statement_ |
-	;
-		    
+if_statement:
+    IF expression THEN statement else_part ENDIF
+    ;
+
+else_part:
+    /* empty */
+    | ELSE statement
+    ;
+
+case_statement:
+    CASE expression IS case_list OTHERS ARROW statement ENDCASE
+    ;
+
+case_list:
+    case
+    | case_list case
+    ;
+
+case:
+    WHEN INT_LITERAL ARROW statement |
+    WHEN error SEMICOLON
+    ;
+
+statement_list:
+    statement
+    | statement SEMICOLON statement_list
+    ;
+
 expression:
-	expression ANDOP relation |
-	relation ;
+    simple_expression
+    | expression binary_logical_operator simple_expression
+    ;
 
-relation:
-	relation RELOP term |
-	term;
+simple_expression:
+    term
+    | simple_expression adding_operator term
+    ;
 
 term:
-	term ADDOP factor |
-	factor ;
-      
+    factor
+    | term multiplying_operator factor
+    ;
+
 factor:
-	factor MULOP primary |
-	primary ;
+    primary
+    | unary_arithmetic_operator factor
+    ;
 
 primary:
-	'(' expression ')' |
-	INT_LITERAL | 
-	IDENTIFIER ;
-    
+    IDENTIFIER
+    | INT_LITERAL
+    | REAL_LITERAL
+    | BOOL_LITERAL
+    | '(' expression ')'
+    ;
+
+adding_operator:
+    ADDOP
+    | NOTOP
+    ;
+
+multiplying_operator:
+    MULOP
+    | REMOP
+    ;
+
+
+
+binary_logical_operator:
+    ANDOP
+    | OROP
+    ;
+
+unary_arithmetic_operator:
+    ADDOP
+    | NOTOP
+    ;
+
+operator:
+    ADDOP
+    | MULOP
+    | REMOP
+    | EXPOP
+    ;
+
 %%
 
 void yyerror(const char* message)
 {
-	appendError(SYNTAX, message);
+    appendError(SYNTAX, message);
 }
 
-int main(int argc, char *argv[])    
+int main(int argc, char *argv[])
 {
-	firstLine();
-	yyparse();
-	lastLine();
-	return 0;
-} 
+    firstLine();
+    yyparse();
+    lastLine();
+    return 0;
+}
