@@ -1,9 +1,30 @@
+Nonterminals useless in grammar
+
+    statements
+    parameters_opt
+    parameters
+
+
 Terminals unused in grammar
 
     RELOP
 
 
-State 70 conflicts: 1 reduce/reduce
+Rules useless in grammar
+
+   58 statements: statement
+   59           | statement statements
+
+   60 parameters_opt: parameters
+   61               | %empty
+
+   62 parameters: '(' parameter_list ')'
+   63           | error SEMICOLON
+
+
+State 69 conflicts: 1 reduce/reduce
+State 93 conflicts: 1 shift/reduce
+State 106 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -13,11 +34,11 @@ Grammar
     1 program: function_declaration
     2        | statement
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters RETURNS type body SEMICOLON
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS type body SEMICOLON
     4                     | error SEMICOLON
 
-    5 parameters: '(' parameter_list ')'
-    6           | error SEMICOLON
+    5 optional_parameters: %empty
+    6                    | parameter_list
 
     7 parameter_list: parameter
     8               | parameter ',' parameter_list
@@ -30,932 +51,893 @@ Grammar
    13     | REAL
    14     | BOOLEAN
 
-   15 body: BEGIN_ statement_list END SEMICOLON
+   15 body: BEGIN_ variable_declaration statement_list END SEMICOLON
 
-   16 statement: expression SEMICOLON
+   16 statement: IDENTIFIER ASSIGN expression SEMICOLON
    17          | reduce_statement
    18          | if_statement
    19          | case_statement
 
-   20 reduce_statement: REDUCE operator statement_list ENDREDUCE
+   20 variable_declaration: %empty
+   21                     | IDENTIFIER ':' type IS expression SEMICOLON variable_declaration
 
-   21 if_statement: IF expression THEN statement else_part ENDIF
+   22 reduce_statement: REDUCE operator statement_list ENDREDUCE
 
-   22 else_part: ε
-   23          | ELSE statement
+   23 if_statement: IF expression THEN statement else_part ENDIF
 
-   24 case_statement: CASE expression IS case_list OTHERS ARROW statement ENDCASE
+   24 else_part: %empty
+   25          | ELSE statement
 
-   25 case_list: case
-   26          | case_list case
+   26 case_statement: CASE expression IS case_list OTHERS ARROW statement ENDCASE
 
-   27 case: WHEN INT_LITERAL ARROW statement
-   28     | WHEN error SEMICOLON
+   27 case_list: case
+   28          | case_list case
 
-   29 statement_list: statement
-   30               | statement SEMICOLON statement_list
+   29 case: WHEN INT_LITERAL ARROW statement
+   30     | WHEN error SEMICOLON
 
-   31 expression: simple_expression
-   32           | expression binary_logical_operator simple_expression
+   31 statement_list: statement
+   32               | statement statement_list
 
-   33 simple_expression: term
-   34                  | simple_expression adding_operator term
+   33 expression: simple_expression
+   34           | expression binary_logical_operator simple_expression
 
-   35 term: factor
-   36     | term multiplying_operator factor
+   35 simple_expression: term
+   36                  | simple_expression adding_operator term
 
-   37 factor: primary
-   38       | unary_arithmetic_operator factor
+   37 term: factor
+   38     | term multiplying_operator factor
 
-   39 primary: IDENTIFIER
-   40        | INT_LITERAL
-   41        | REAL_LITERAL
-   42        | BOOL_LITERAL
-   43        | '(' expression ')'
+   39 factor: primary
+   40       | unary_arithmetic_operator factor
 
-   44 adding_operator: ADDOP
-   45                | NOTOP
+   41 primary: IDENTIFIER
+   42        | INT_LITERAL
+   43        | REAL_LITERAL
+   44        | BOOL_LITERAL
+   45        | '(' expression ')'
 
-   46 multiplying_operator: MULOP
-   47                     | REMOP
+   46 adding_operator: ADDOP
+   47                | NOTOP
 
-   48 binary_logical_operator: ANDOP
-   49                        | OROP
+   48 multiplying_operator: MULOP
+   49                     | REMOP
 
-   50 unary_arithmetic_operator: ADDOP
-   51                          | NOTOP
+   50 binary_logical_operator: ANDOP
+   51                        | OROP
 
-   52 operator: ADDOP
-   53         | MULOP
-   54         | REMOP
-   55         | EXPOP
+   52 unary_arithmetic_operator: ADDOP
+   53                          | NOTOP
+
+   54 operator: ADDOP
+   55         | MULOP
+   56         | REMOP
+   57         | EXPOP
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '(' (40) 5 43
-    ')' (41) 5 43
+    '(' (40) 3 45
+    ')' (41) 3 45
     ',' (44) 8
-    ':' (58) 10
-    error (256) 4 6 9 11 28
-    IDENTIFIER (258) 3 10 39
-    INT_LITERAL (259) 27 40
-    REAL_LITERAL (260) 41
-    BOOL_LITERAL (261) 42
+    ':' (58) 10 21
+    error (256) 4 9 11 30
+    IDENTIFIER (258) 3 10 16 21 41
+    INT_LITERAL (259) 29 42
+    REAL_LITERAL (260) 43
+    BOOL_LITERAL (261) 44
     REAL (262) 13
-    ADDOP (263) 44 50 52
-    MULOP (264) 46 53
-    REMOP (265) 47 54
-    EXPOP (266) 55
+    ADDOP (263) 46 52 54
+    MULOP (264) 48 55
+    REMOP (265) 49 56
+    EXPOP (266) 57
     RELOP (267)
-    ANDOP (268) 48
-    OROP (269) 49
-    NOTOP (270) 45 51
+    ANDOP (268) 50
+    OROP (269) 51
+    NOTOP (270) 47 53
     BEGIN_ (271) 15
     BOOLEAN (272) 14
     END (273) 15
-    ENDREDUCE (274) 20
+    ENDREDUCE (274) 22
     FUNCTION (275) 3
     INTEGER (276) 12
-    IS (277) 24
-    REDUCE (278) 20
+    IS (277) 21 26
+    REDUCE (278) 22
     RETURNS (279) 3
-    SEMICOLON (280) 3 4 6 9 11 15 16 28 30
-    IF (281) 21
-    THEN (282) 21
-    ELSE (283) 23
-    ENDIF (284) 21
-    CASE (285) 24
-    WHEN (286) 27 28
-    OTHERS (287) 24
-    ARROW (288) 24 27
-    ENDCASE (289) 24
+    ASSIGN (280) 16
+    SEMICOLON (281) 3 4 9 11 15 16 21 30
+    IF (282) 23
+    THEN (283) 23
+    ELSE (284) 25
+    ENDIF (285) 23
+    CASE (286) 26
+    WHEN (287) 29 30
+    OTHERS (288) 26
+    ARROW (289) 26 29
+    ENDCASE (290) 26
 
 
 Nonterminals, with rules where they appear
 
-    $accept (39)
+    $accept (40)
         on left: 0
-    program (40)
+    program (41)
         on left: 1 2
         on right: 0
-    function_declaration (41)
+    function_declaration (42)
         on left: 3 4
         on right: 1
-    parameters (42)
+    optional_parameters (43)
         on left: 5 6
         on right: 3
-    parameter_list (43)
+    parameter_list (44)
         on left: 7 8 9
-        on right: 5 8
-    parameter (44)
+        on right: 6 8
+    parameter (45)
         on left: 10 11
         on right: 7 8
-    type (45)
+    type (46)
         on left: 12 13 14
-        on right: 3 10
-    body (46)
+        on right: 3 10 21
+    body (47)
         on left: 15
         on right: 3
-    statement (47)
+    statement (48)
         on left: 16 17 18 19
-        on right: 2 21 23 24 27 29 30
-    reduce_statement (48)
-        on left: 20
+        on right: 2 23 25 26 29 31 32
+    variable_declaration (49)
+        on left: 20 21
+        on right: 15 21
+    reduce_statement (50)
+        on left: 22
         on right: 17
-    if_statement (49)
-        on left: 21
+    if_statement (51)
+        on left: 23
         on right: 18
-    else_part (50)
-        on left: 22 23
-        on right: 21
-    case_statement (51)
-        on left: 24
+    else_part (52)
+        on left: 24 25
+        on right: 23
+    case_statement (53)
+        on left: 26
         on right: 19
-    case_list (52)
-        on left: 25 26
-        on right: 24 26
-    case (53)
+    case_list (54)
         on left: 27 28
-        on right: 25 26
-    statement_list (54)
+        on right: 26 28
+    case (55)
         on left: 29 30
-        on right: 15 20 30
-    expression (55)
+        on right: 27 28
+    statement_list (56)
         on left: 31 32
-        on right: 16 21 24 32 43
-    simple_expression (56)
+        on right: 15 22 32
+    expression (57)
         on left: 33 34
-        on right: 31 32 34
-    term (57)
+        on right: 16 21 23 26 34 45
+    simple_expression (58)
         on left: 35 36
         on right: 33 34 36
-    factor (58)
+    term (59)
         on left: 37 38
         on right: 35 36 38
-    primary (59)
-        on left: 39 40 41 42 43
-        on right: 37
-    adding_operator (60)
-        on left: 44 45
-        on right: 34
-    multiplying_operator (61)
+    factor (60)
+        on left: 39 40
+        on right: 37 38 40
+    primary (61)
+        on left: 41 42 43 44 45
+        on right: 39
+    adding_operator (62)
         on left: 46 47
         on right: 36
-    binary_logical_operator (62)
+    multiplying_operator (63)
         on left: 48 49
-        on right: 32
-    unary_arithmetic_operator (63)
-        on left: 50 51
         on right: 38
-    operator (64)
-        on left: 52 53 54 55
-        on right: 20
+    binary_logical_operator (64)
+        on left: 50 51
+        on right: 34
+    unary_arithmetic_operator (65)
+        on left: 52 53
+        on right: 40
+    operator (66)
+        on left: 54 55 56 57
+        on right: 22
 
 
 State 0
 
-    0 $accept: • program $end
+    0 $accept: . program $end
 
-    error         shift, and go to state 1
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    FUNCTION      shift, and go to state 8
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
+    error       shift, and go to state 1
+    IDENTIFIER  shift, and go to state 2
+    FUNCTION    shift, and go to state 3
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
 
-    program                    go to state 13
-    function_declaration       go to state 14
-    statement                  go to state 15
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    program               go to state 7
+    function_declaration  go to state 8
+    statement             go to state 9
+    reduce_statement      go to state 10
+    if_statement          go to state 11
+    case_statement        go to state 12
 
 
 State 1
 
-    4 function_declaration: error • SEMICOLON
+    4 function_declaration: error . SEMICOLON
 
-    SEMICOLON  shift, and go to state 25
+    SEMICOLON  shift, and go to state 13
 
 
 State 2
 
-   39 primary: IDENTIFIER •
+   16 statement: IDENTIFIER . ASSIGN expression SEMICOLON
 
-    $default  reduce using rule 39 (primary)
+    ASSIGN  shift, and go to state 14
 
 
 State 3
 
-   40 primary: INT_LITERAL •
+    3 function_declaration: FUNCTION . IDENTIFIER '(' optional_parameters ')' RETURNS type body SEMICOLON
 
-    $default  reduce using rule 40 (primary)
+    IDENTIFIER  shift, and go to state 15
 
 
 State 4
 
-   41 primary: REAL_LITERAL •
+   22 reduce_statement: REDUCE . operator statement_list ENDREDUCE
 
-    $default  reduce using rule 41 (primary)
+    ADDOP  shift, and go to state 16
+    MULOP  shift, and go to state 17
+    REMOP  shift, and go to state 18
+    EXPOP  shift, and go to state 19
+
+    operator  go to state 20
 
 
 State 5
 
-   42 primary: BOOL_LITERAL •
+   23 if_statement: IF . expression THEN statement else_part ENDIF
 
-    $default  reduce using rule 42 (primary)
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    expression                 go to state 28
+    simple_expression          go to state 29
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 6
 
-   50 unary_arithmetic_operator: ADDOP •
+   26 case_statement: CASE . expression IS case_list OTHERS ARROW statement ENDCASE
 
-    $default  reduce using rule 50 (unary_arithmetic_operator)
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    expression                 go to state 34
+    simple_expression          go to state 29
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 7
 
-   51 unary_arithmetic_operator: NOTOP •
-
-    $default  reduce using rule 51 (unary_arithmetic_operator)
-
-
-State 8
-
-    3 function_declaration: FUNCTION • IDENTIFIER parameters RETURNS type body SEMICOLON
-
-    IDENTIFIER  shift, and go to state 26
-
-
-State 9
-
-   20 reduce_statement: REDUCE • operator statement_list ENDREDUCE
-
-    ADDOP  shift, and go to state 27
-    MULOP  shift, and go to state 28
-    REMOP  shift, and go to state 29
-    EXPOP  shift, and go to state 30
-
-    operator  go to state 31
-
-
-State 10
-
-   21 if_statement: IF • expression THEN statement else_part ENDIF
-
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    expression                 go to state 32
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
-
-
-State 11
-
-   24 case_statement: CASE • expression IS case_list OTHERS ARROW statement ENDCASE
-
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    expression                 go to state 33
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
-
-
-State 12
-
-   43 primary: '(' • expression ')'
-
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    expression                 go to state 34
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
-
-
-State 13
-
-    0 $accept: program • $end
+    0 $accept: program . $end
 
     $end  shift, and go to state 35
 
 
-State 14
+State 8
 
-    1 program: function_declaration •
+    1 program: function_declaration .
 
     $default  reduce using rule 1 (program)
 
 
-State 15
+State 9
 
-    2 program: statement •
+    2 program: statement .
 
     $default  reduce using rule 2 (program)
 
 
-State 16
+State 10
 
-   17 statement: reduce_statement •
+   17 statement: reduce_statement .
 
     $default  reduce using rule 17 (statement)
 
 
-State 17
+State 11
 
-   18 statement: if_statement •
+   18 statement: if_statement .
 
     $default  reduce using rule 18 (statement)
 
 
-State 18
+State 12
 
-   19 statement: case_statement •
+   19 statement: case_statement .
 
     $default  reduce using rule 19 (statement)
 
 
-State 19
+State 13
 
-   16 statement: expression • SEMICOLON
-   32 expression: expression • binary_logical_operator simple_expression
-
-    ANDOP      shift, and go to state 36
-    OROP       shift, and go to state 37
-    SEMICOLON  shift, and go to state 38
-
-    binary_logical_operator  go to state 39
-
-
-State 20
-
-   31 expression: simple_expression •
-   34 simple_expression: simple_expression • adding_operator term
-
-    ADDOP  shift, and go to state 40
-    NOTOP  shift, and go to state 41
-
-    $default  reduce using rule 31 (expression)
-
-    adding_operator  go to state 42
-
-
-State 21
-
-   33 simple_expression: term •
-   36 term: term • multiplying_operator factor
-
-    MULOP  shift, and go to state 43
-    REMOP  shift, and go to state 44
-
-    $default  reduce using rule 33 (simple_expression)
-
-    multiplying_operator  go to state 45
-
-
-State 22
-
-   35 term: factor •
-
-    $default  reduce using rule 35 (term)
-
-
-State 23
-
-   37 factor: primary •
-
-    $default  reduce using rule 37 (factor)
-
-
-State 24
-
-   38 factor: unary_arithmetic_operator • factor
-
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    factor                     go to state 46
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
-
-
-State 25
-
-    4 function_declaration: error SEMICOLON •
+    4 function_declaration: error SEMICOLON .
 
     $default  reduce using rule 4 (function_declaration)
 
 
-State 26
+State 14
 
-    3 function_declaration: FUNCTION IDENTIFIER • parameters RETURNS type body SEMICOLON
+   16 statement: IDENTIFIER ASSIGN . expression SEMICOLON
 
-    error  shift, and go to state 47
-    '('    shift, and go to state 48
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
 
-    parameters  go to state 49
-
-
-State 27
-
-   52 operator: ADDOP •
-
-    $default  reduce using rule 52 (operator)
-
-
-State 28
-
-   53 operator: MULOP •
-
-    $default  reduce using rule 53 (operator)
+    expression                 go to state 36
+    simple_expression          go to state 29
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
-State 29
+State 15
 
-   54 operator: REMOP •
+    3 function_declaration: FUNCTION IDENTIFIER . '(' optional_parameters ')' RETURNS type body SEMICOLON
+
+    '('  shift, and go to state 37
+
+
+State 16
+
+   54 operator: ADDOP .
 
     $default  reduce using rule 54 (operator)
 
 
-State 30
+State 17
 
-   55 operator: EXPOP •
+   55 operator: MULOP .
 
     $default  reduce using rule 55 (operator)
 
 
+State 18
+
+   56 operator: REMOP .
+
+    $default  reduce using rule 56 (operator)
+
+
+State 19
+
+   57 operator: EXPOP .
+
+    $default  reduce using rule 57 (operator)
+
+
+State 20
+
+   22 reduce_statement: REDUCE operator . statement_list ENDREDUCE
+
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    statement         go to state 38
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
+    statement_list    go to state 39
+
+
+State 21
+
+   41 primary: IDENTIFIER .
+
+    $default  reduce using rule 41 (primary)
+
+
+State 22
+
+   42 primary: INT_LITERAL .
+
+    $default  reduce using rule 42 (primary)
+
+
+State 23
+
+   43 primary: REAL_LITERAL .
+
+    $default  reduce using rule 43 (primary)
+
+
+State 24
+
+   44 primary: BOOL_LITERAL .
+
+    $default  reduce using rule 44 (primary)
+
+
+State 25
+
+   52 unary_arithmetic_operator: ADDOP .
+
+    $default  reduce using rule 52 (unary_arithmetic_operator)
+
+
+State 26
+
+   53 unary_arithmetic_operator: NOTOP .
+
+    $default  reduce using rule 53 (unary_arithmetic_operator)
+
+
+State 27
+
+   45 primary: '(' . expression ')'
+
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    expression                 go to state 40
+    simple_expression          go to state 29
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
+
+
+State 28
+
+   23 if_statement: IF expression . THEN statement else_part ENDIF
+   34 expression: expression . binary_logical_operator simple_expression
+
+    ANDOP  shift, and go to state 41
+    OROP   shift, and go to state 42
+    THEN   shift, and go to state 43
+
+    binary_logical_operator  go to state 44
+
+
+State 29
+
+   33 expression: simple_expression .
+   36 simple_expression: simple_expression . adding_operator term
+
+    ADDOP  shift, and go to state 45
+    NOTOP  shift, and go to state 46
+
+    $default  reduce using rule 33 (expression)
+
+    adding_operator  go to state 47
+
+
+State 30
+
+   35 simple_expression: term .
+   38 term: term . multiplying_operator factor
+
+    MULOP  shift, and go to state 48
+    REMOP  shift, and go to state 49
+
+    $default  reduce using rule 35 (simple_expression)
+
+    multiplying_operator  go to state 50
+
+
 State 31
 
-   20 reduce_statement: REDUCE operator • statement_list ENDREDUCE
+   37 term: factor .
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
-
-    statement                  go to state 50
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    statement_list             go to state 51
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 37 (term)
 
 
 State 32
 
-   21 if_statement: IF expression • THEN statement else_part ENDIF
-   32 expression: expression • binary_logical_operator simple_expression
+   39 factor: primary .
 
-    ANDOP  shift, and go to state 36
-    OROP   shift, and go to state 37
-    THEN   shift, and go to state 52
-
-    binary_logical_operator  go to state 39
+    $default  reduce using rule 39 (factor)
 
 
 State 33
 
-   24 case_statement: CASE expression • IS case_list OTHERS ARROW statement ENDCASE
-   32 expression: expression • binary_logical_operator simple_expression
+   40 factor: unary_arithmetic_operator . factor
 
-    ANDOP  shift, and go to state 36
-    OROP   shift, and go to state 37
-    IS     shift, and go to state 53
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
 
-    binary_logical_operator  go to state 39
+    factor                     go to state 51
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 34
 
-   32 expression: expression • binary_logical_operator simple_expression
-   43 primary: '(' expression • ')'
+   26 case_statement: CASE expression . IS case_list OTHERS ARROW statement ENDCASE
+   34 expression: expression . binary_logical_operator simple_expression
 
-    ANDOP  shift, and go to state 36
-    OROP   shift, and go to state 37
-    ')'    shift, and go to state 54
+    ANDOP  shift, and go to state 41
+    OROP   shift, and go to state 42
+    IS     shift, and go to state 52
 
-    binary_logical_operator  go to state 39
+    binary_logical_operator  go to state 44
 
 
 State 35
 
-    0 $accept: program $end •
+    0 $accept: program $end .
 
     $default  accept
 
 
 State 36
 
-   48 binary_logical_operator: ANDOP •
+   16 statement: IDENTIFIER ASSIGN expression . SEMICOLON
+   34 expression: expression . binary_logical_operator simple_expression
 
-    $default  reduce using rule 48 (binary_logical_operator)
+    ANDOP      shift, and go to state 41
+    OROP       shift, and go to state 42
+    SEMICOLON  shift, and go to state 53
+
+    binary_logical_operator  go to state 44
 
 
 State 37
 
-   49 binary_logical_operator: OROP •
+    3 function_declaration: FUNCTION IDENTIFIER '(' . optional_parameters ')' RETURNS type body SEMICOLON
 
-    $default  reduce using rule 49 (binary_logical_operator)
+    error       shift, and go to state 54
+    IDENTIFIER  shift, and go to state 55
+
+    ')'  reduce using rule 5 (optional_parameters)
+
+    optional_parameters  go to state 56
+    parameter_list       go to state 57
+    parameter            go to state 58
 
 
 State 38
 
-   16 statement: expression SEMICOLON •
+   31 statement_list: statement .
+   32               | statement . statement_list
 
-    $default  reduce using rule 16 (statement)
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    $default  reduce using rule 31 (statement_list)
+
+    statement         go to state 38
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
+    statement_list    go to state 59
 
 
 State 39
 
-   32 expression: expression binary_logical_operator • simple_expression
+   22 reduce_statement: REDUCE operator statement_list . ENDREDUCE
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    simple_expression          go to state 55
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    ENDREDUCE  shift, and go to state 60
 
 
 State 40
 
-   44 adding_operator: ADDOP •
+   34 expression: expression . binary_logical_operator simple_expression
+   45 primary: '(' expression . ')'
 
-    $default  reduce using rule 44 (adding_operator)
+    ANDOP  shift, and go to state 41
+    OROP   shift, and go to state 42
+    ')'    shift, and go to state 61
+
+    binary_logical_operator  go to state 44
 
 
 State 41
 
-   45 adding_operator: NOTOP •
+   50 binary_logical_operator: ANDOP .
 
-    $default  reduce using rule 45 (adding_operator)
+    $default  reduce using rule 50 (binary_logical_operator)
 
 
 State 42
 
-   34 simple_expression: simple_expression adding_operator • term
+   51 binary_logical_operator: OROP .
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    term                       go to state 56
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 51 (binary_logical_operator)
 
 
 State 43
 
-   46 multiplying_operator: MULOP •
+   23 if_statement: IF expression THEN . statement else_part ENDIF
 
-    $default  reduce using rule 46 (multiplying_operator)
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    statement         go to state 62
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
 
 
 State 44
 
-   47 multiplying_operator: REMOP •
+   34 expression: expression binary_logical_operator . simple_expression
 
-    $default  reduce using rule 47 (multiplying_operator)
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    simple_expression          go to state 63
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 45
 
-   36 term: term multiplying_operator • factor
+   46 adding_operator: ADDOP .
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    '('           shift, and go to state 12
-
-    factor                     go to state 57
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 46 (adding_operator)
 
 
 State 46
 
-   38 factor: unary_arithmetic_operator factor •
+   47 adding_operator: NOTOP .
 
-    $default  reduce using rule 38 (factor)
+    $default  reduce using rule 47 (adding_operator)
 
 
 State 47
 
-    6 parameters: error • SEMICOLON
+   36 simple_expression: simple_expression adding_operator . term
 
-    SEMICOLON  shift, and go to state 58
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    term                       go to state 64
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 48
 
-    5 parameters: '(' • parameter_list ')'
+   48 multiplying_operator: MULOP .
 
-    error       shift, and go to state 59
-    IDENTIFIER  shift, and go to state 60
-
-    parameter_list  go to state 61
-    parameter       go to state 62
+    $default  reduce using rule 48 (multiplying_operator)
 
 
 State 49
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters • RETURNS type body SEMICOLON
+   49 multiplying_operator: REMOP .
 
-    RETURNS  shift, and go to state 63
+    $default  reduce using rule 49 (multiplying_operator)
 
 
 State 50
 
-   29 statement_list: statement •
-   30               | statement • SEMICOLON statement_list
+   38 term: term multiplying_operator . factor
 
-    SEMICOLON  shift, and go to state 64
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
 
-    $default  reduce using rule 29 (statement_list)
+    factor                     go to state 65
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
 
 
 State 51
 
-   20 reduce_statement: REDUCE operator statement_list • ENDREDUCE
+   40 factor: unary_arithmetic_operator factor .
 
-    ENDREDUCE  shift, and go to state 65
+    $default  reduce using rule 40 (factor)
 
 
 State 52
 
-   21 if_statement: IF expression THEN • statement else_part ENDIF
+   26 case_statement: CASE expression IS . case_list OTHERS ARROW statement ENDCASE
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
+    WHEN  shift, and go to state 66
 
-    statement                  go to state 66
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    case_list  go to state 67
+    case       go to state 68
 
 
 State 53
 
-   24 case_statement: CASE expression IS • case_list OTHERS ARROW statement ENDCASE
+   16 statement: IDENTIFIER ASSIGN expression SEMICOLON .
 
-    WHEN  shift, and go to state 67
-
-    case_list  go to state 68
-    case       go to state 69
+    $default  reduce using rule 16 (statement)
 
 
 State 54
 
-   43 primary: '(' expression ')' •
+    9 parameter_list: error . SEMICOLON
+   11 parameter: error . SEMICOLON
 
-    $default  reduce using rule 43 (primary)
+    SEMICOLON  shift, and go to state 69
 
 
 State 55
 
-   32 expression: expression binary_logical_operator simple_expression •
-   34 simple_expression: simple_expression • adding_operator term
+   10 parameter: IDENTIFIER . ':' type
 
-    ADDOP  shift, and go to state 40
-    NOTOP  shift, and go to state 41
-
-    $default  reduce using rule 32 (expression)
-
-    adding_operator  go to state 42
+    ':'  shift, and go to state 70
 
 
 State 56
 
-   34 simple_expression: simple_expression adding_operator term •
-   36 term: term • multiplying_operator factor
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters . ')' RETURNS type body SEMICOLON
 
-    MULOP  shift, and go to state 43
-    REMOP  shift, and go to state 44
-
-    $default  reduce using rule 34 (simple_expression)
-
-    multiplying_operator  go to state 45
+    ')'  shift, and go to state 71
 
 
 State 57
 
-   36 term: term multiplying_operator factor •
+    6 optional_parameters: parameter_list .
 
-    $default  reduce using rule 36 (term)
+    $default  reduce using rule 6 (optional_parameters)
 
 
 State 58
 
-    6 parameters: error SEMICOLON •
+    7 parameter_list: parameter .
+    8               | parameter . ',' parameter_list
 
-    $default  reduce using rule 6 (parameters)
-
-
-State 59
-
-    9 parameter_list: error • SEMICOLON
-   11 parameter: error • SEMICOLON
-
-    SEMICOLON  shift, and go to state 70
-
-
-State 60
-
-   10 parameter: IDENTIFIER • ':' type
-
-    ':'  shift, and go to state 71
-
-
-State 61
-
-    5 parameters: '(' parameter_list • ')'
-
-    ')'  shift, and go to state 72
-
-
-State 62
-
-    7 parameter_list: parameter •
-    8               | parameter • ',' parameter_list
-
-    ','  shift, and go to state 73
+    ','  shift, and go to state 72
 
     $default  reduce using rule 7 (parameter_list)
 
 
+State 59
+
+   32 statement_list: statement statement_list .
+
+    $default  reduce using rule 32 (statement_list)
+
+
+State 60
+
+   22 reduce_statement: REDUCE operator statement_list ENDREDUCE .
+
+    $default  reduce using rule 22 (reduce_statement)
+
+
+State 61
+
+   45 primary: '(' expression ')' .
+
+    $default  reduce using rule 45 (primary)
+
+
+State 62
+
+   23 if_statement: IF expression THEN statement . else_part ENDIF
+
+    ELSE  shift, and go to state 73
+
+    $default  reduce using rule 24 (else_part)
+
+    else_part  go to state 74
+
+
 State 63
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters RETURNS • type body SEMICOLON
+   34 expression: expression binary_logical_operator simple_expression .
+   36 simple_expression: simple_expression . adding_operator term
 
-    REAL     shift, and go to state 74
-    BOOLEAN  shift, and go to state 75
-    INTEGER  shift, and go to state 76
+    ADDOP  shift, and go to state 45
+    NOTOP  shift, and go to state 46
 
-    type  go to state 77
+    $default  reduce using rule 34 (expression)
+
+    adding_operator  go to state 47
 
 
 State 64
 
-   30 statement_list: statement SEMICOLON • statement_list
+   36 simple_expression: simple_expression adding_operator term .
+   38 term: term . multiplying_operator factor
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
+    MULOP  shift, and go to state 48
+    REMOP  shift, and go to state 49
 
-    statement                  go to state 50
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    statement_list             go to state 78
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 36 (simple_expression)
+
+    multiplying_operator  go to state 50
 
 
 State 65
 
-   20 reduce_statement: REDUCE operator statement_list ENDREDUCE •
+   38 term: term multiplying_operator factor .
 
-    $default  reduce using rule 20 (reduce_statement)
+    $default  reduce using rule 38 (term)
 
 
 State 66
 
-   21 if_statement: IF expression THEN statement • else_part ENDIF
+   29 case: WHEN . INT_LITERAL ARROW statement
+   30     | WHEN . error SEMICOLON
 
-    ELSE  shift, and go to state 79
-
-    $default  reduce using rule 22 (else_part)
-
-    else_part  go to state 80
+    error        shift, and go to state 75
+    INT_LITERAL  shift, and go to state 76
 
 
 State 67
 
-   27 case: WHEN • INT_LITERAL ARROW statement
-   28     | WHEN • error SEMICOLON
+   26 case_statement: CASE expression IS case_list . OTHERS ARROW statement ENDCASE
+   28 case_list: case_list . case
 
-    error        shift, and go to state 81
-    INT_LITERAL  shift, and go to state 82
+    WHEN    shift, and go to state 66
+    OTHERS  shift, and go to state 77
+
+    case  go to state 78
 
 
 State 68
 
-   24 case_statement: CASE expression IS case_list • OTHERS ARROW statement ENDCASE
-   26 case_list: case_list • case
+   27 case_list: case .
 
-    WHEN    shift, and go to state 67
-    OTHERS  shift, and go to state 83
-
-    case  go to state 84
+    $default  reduce using rule 27 (case_list)
 
 
 State 69
 
-   25 case_list: case •
-
-    $default  reduce using rule 25 (case_list)
-
-
-State 70
-
-    9 parameter_list: error SEMICOLON •
-   11 parameter: error SEMICOLON •
+    9 parameter_list: error SEMICOLON .
+   11 parameter: error SEMICOLON .
 
     ')'       reduce using rule 9 (parameter_list)
     ')'       [reduce using rule 11 (parameter)]
@@ -963,302 +945,346 @@ State 70
     $default  reduce using rule 9 (parameter_list)
 
 
+State 70
+
+   10 parameter: IDENTIFIER ':' . type
+
+    REAL     shift, and go to state 79
+    BOOLEAN  shift, and go to state 80
+    INTEGER  shift, and go to state 81
+
+    type  go to state 82
+
+
 State 71
 
-   10 parameter: IDENTIFIER ':' • type
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' . RETURNS type body SEMICOLON
 
-    REAL     shift, and go to state 74
-    BOOLEAN  shift, and go to state 75
-    INTEGER  shift, and go to state 76
-
-    type  go to state 85
+    RETURNS  shift, and go to state 83
 
 
 State 72
 
-    5 parameters: '(' parameter_list ')' •
+    8 parameter_list: parameter ',' . parameter_list
 
-    $default  reduce using rule 5 (parameters)
+    error       shift, and go to state 54
+    IDENTIFIER  shift, and go to state 55
+
+    parameter_list  go to state 84
+    parameter       go to state 58
 
 
 State 73
 
-    8 parameter_list: parameter ',' • parameter_list
+   25 else_part: ELSE . statement
 
-    error       shift, and go to state 59
-    IDENTIFIER  shift, and go to state 60
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
 
-    parameter_list  go to state 86
-    parameter       go to state 62
+    statement         go to state 85
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
 
 
 State 74
 
-   13 type: REAL •
+   23 if_statement: IF expression THEN statement else_part . ENDIF
 
-    $default  reduce using rule 13 (type)
+    ENDIF  shift, and go to state 86
 
 
 State 75
 
-   14 type: BOOLEAN •
+   30 case: WHEN error . SEMICOLON
 
-    $default  reduce using rule 14 (type)
+    SEMICOLON  shift, and go to state 87
 
 
 State 76
 
-   12 type: INTEGER •
+   29 case: WHEN INT_LITERAL . ARROW statement
 
-    $default  reduce using rule 12 (type)
+    ARROW  shift, and go to state 88
 
 
 State 77
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters RETURNS type • body SEMICOLON
+   26 case_statement: CASE expression IS case_list OTHERS . ARROW statement ENDCASE
 
-    BEGIN_  shift, and go to state 87
-
-    body  go to state 88
+    ARROW  shift, and go to state 89
 
 
 State 78
 
-   30 statement_list: statement SEMICOLON statement_list •
+   28 case_list: case_list case .
 
-    $default  reduce using rule 30 (statement_list)
+    $default  reduce using rule 28 (case_list)
 
 
 State 79
 
-   23 else_part: ELSE • statement
+   13 type: REAL .
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
-
-    statement                  go to state 89
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 13 (type)
 
 
 State 80
 
-   21 if_statement: IF expression THEN statement else_part • ENDIF
+   14 type: BOOLEAN .
 
-    ENDIF  shift, and go to state 90
+    $default  reduce using rule 14 (type)
 
 
 State 81
 
-   28 case: WHEN error • SEMICOLON
+   12 type: INTEGER .
 
-    SEMICOLON  shift, and go to state 91
+    $default  reduce using rule 12 (type)
 
 
 State 82
 
-   27 case: WHEN INT_LITERAL • ARROW statement
-
-    ARROW  shift, and go to state 92
-
-
-State 83
-
-   24 case_statement: CASE expression IS case_list OTHERS • ARROW statement ENDCASE
-
-    ARROW  shift, and go to state 93
-
-
-State 84
-
-   26 case_list: case_list case •
-
-    $default  reduce using rule 26 (case_list)
-
-
-State 85
-
-   10 parameter: IDENTIFIER ':' type •
+   10 parameter: IDENTIFIER ':' type .
 
     $default  reduce using rule 10 (parameter)
 
 
-State 86
+State 83
 
-    8 parameter_list: parameter ',' parameter_list •
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS . type body SEMICOLON
+
+    REAL     shift, and go to state 79
+    BOOLEAN  shift, and go to state 80
+    INTEGER  shift, and go to state 81
+
+    type  go to state 90
+
+
+State 84
+
+    8 parameter_list: parameter ',' parameter_list .
 
     $default  reduce using rule 8 (parameter_list)
 
 
+State 85
+
+   25 else_part: ELSE statement .
+
+    $default  reduce using rule 25 (else_part)
+
+
+State 86
+
+   23 if_statement: IF expression THEN statement else_part ENDIF .
+
+    $default  reduce using rule 23 (if_statement)
+
+
 State 87
 
-   15 body: BEGIN_ • statement_list END SEMICOLON
+   30 case: WHEN error SEMICOLON .
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
-
-    statement                  go to state 50
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    statement_list             go to state 94
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    $default  reduce using rule 30 (case)
 
 
 State 88
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters RETURNS type body • SEMICOLON
+   29 case: WHEN INT_LITERAL ARROW . statement
 
-    SEMICOLON  shift, and go to state 95
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    statement         go to state 91
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
 
 
 State 89
 
-   23 else_part: ELSE statement •
+   26 case_statement: CASE expression IS case_list OTHERS ARROW . statement ENDCASE
 
-    $default  reduce using rule 23 (else_part)
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    statement         go to state 92
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
 
 
 State 90
 
-   21 if_statement: IF expression THEN statement else_part ENDIF •
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS type . body SEMICOLON
 
-    $default  reduce using rule 21 (if_statement)
+    BEGIN_  shift, and go to state 93
+
+    body  go to state 94
 
 
 State 91
 
-   28 case: WHEN error SEMICOLON •
+   29 case: WHEN INT_LITERAL ARROW statement .
 
-    $default  reduce using rule 28 (case)
+    $default  reduce using rule 29 (case)
 
 
 State 92
 
-   27 case: WHEN INT_LITERAL ARROW • statement
+   26 case_statement: CASE expression IS case_list OTHERS ARROW statement . ENDCASE
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
-
-    statement                  go to state 96
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    ENDCASE  shift, and go to state 95
 
 
 State 93
 
-   24 case_statement: CASE expression IS case_list OTHERS ARROW • statement ENDCASE
+   15 body: BEGIN_ . variable_declaration statement_list END SEMICOLON
 
-    IDENTIFIER    shift, and go to state 2
-    INT_LITERAL   shift, and go to state 3
-    REAL_LITERAL  shift, and go to state 4
-    BOOL_LITERAL  shift, and go to state 5
-    ADDOP         shift, and go to state 6
-    NOTOP         shift, and go to state 7
-    REDUCE        shift, and go to state 9
-    IF            shift, and go to state 10
-    CASE          shift, and go to state 11
-    '('           shift, and go to state 12
+    IDENTIFIER  shift, and go to state 96
 
-    statement                  go to state 97
-    reduce_statement           go to state 16
-    if_statement               go to state 17
-    case_statement             go to state 18
-    expression                 go to state 19
-    simple_expression          go to state 20
-    term                       go to state 21
-    factor                     go to state 22
-    primary                    go to state 23
-    unary_arithmetic_operator  go to state 24
+    IDENTIFIER  [reduce using rule 20 (variable_declaration)]
+    $default    reduce using rule 20 (variable_declaration)
+
+    variable_declaration  go to state 97
 
 
 State 94
 
-   15 body: BEGIN_ statement_list • END SEMICOLON
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS type body . SEMICOLON
 
-    END  shift, and go to state 98
+    SEMICOLON  shift, and go to state 98
 
 
 State 95
 
-    3 function_declaration: FUNCTION IDENTIFIER parameters RETURNS type body SEMICOLON •
+   26 case_statement: CASE expression IS case_list OTHERS ARROW statement ENDCASE .
 
-    $default  reduce using rule 3 (function_declaration)
+    $default  reduce using rule 26 (case_statement)
 
 
 State 96
 
-   27 case: WHEN INT_LITERAL ARROW statement •
+   21 variable_declaration: IDENTIFIER . ':' type IS expression SEMICOLON variable_declaration
 
-    $default  reduce using rule 27 (case)
+    ':'  shift, and go to state 99
 
 
 State 97
 
-   24 case_statement: CASE expression IS case_list OTHERS ARROW statement • ENDCASE
+   15 body: BEGIN_ variable_declaration . statement_list END SEMICOLON
 
-    ENDCASE  shift, and go to state 99
+    IDENTIFIER  shift, and go to state 2
+    REDUCE      shift, and go to state 4
+    IF          shift, and go to state 5
+    CASE        shift, and go to state 6
+
+    statement         go to state 38
+    reduce_statement  go to state 10
+    if_statement      go to state 11
+    case_statement    go to state 12
+    statement_list    go to state 100
 
 
 State 98
 
-   15 body: BEGIN_ statement_list END • SEMICOLON
+    3 function_declaration: FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS type body SEMICOLON .
 
-    SEMICOLON  shift, and go to state 100
+    $default  reduce using rule 3 (function_declaration)
 
 
 State 99
 
-   24 case_statement: CASE expression IS case_list OTHERS ARROW statement ENDCASE •
+   21 variable_declaration: IDENTIFIER ':' . type IS expression SEMICOLON variable_declaration
 
-    $default  reduce using rule 24 (case_statement)
+    REAL     shift, and go to state 79
+    BOOLEAN  shift, and go to state 80
+    INTEGER  shift, and go to state 81
+
+    type  go to state 101
 
 
 State 100
 
-   15 body: BEGIN_ statement_list END SEMICOLON •
+   15 body: BEGIN_ variable_declaration statement_list . END SEMICOLON
+
+    END  shift, and go to state 102
+
+
+State 101
+
+   21 variable_declaration: IDENTIFIER ':' type . IS expression SEMICOLON variable_declaration
+
+    IS  shift, and go to state 103
+
+
+State 102
+
+   15 body: BEGIN_ variable_declaration statement_list END . SEMICOLON
+
+    SEMICOLON  shift, and go to state 104
+
+
+State 103
+
+   21 variable_declaration: IDENTIFIER ':' type IS . expression SEMICOLON variable_declaration
+
+    IDENTIFIER    shift, and go to state 21
+    INT_LITERAL   shift, and go to state 22
+    REAL_LITERAL  shift, and go to state 23
+    BOOL_LITERAL  shift, and go to state 24
+    ADDOP         shift, and go to state 25
+    NOTOP         shift, and go to state 26
+    '('           shift, and go to state 27
+
+    expression                 go to state 105
+    simple_expression          go to state 29
+    term                       go to state 30
+    factor                     go to state 31
+    primary                    go to state 32
+    unary_arithmetic_operator  go to state 33
+
+
+State 104
+
+   15 body: BEGIN_ variable_declaration statement_list END SEMICOLON .
 
     $default  reduce using rule 15 (body)
+
+
+State 105
+
+   21 variable_declaration: IDENTIFIER ':' type IS expression . SEMICOLON variable_declaration
+   34 expression: expression . binary_logical_operator simple_expression
+
+    ANDOP      shift, and go to state 41
+    OROP       shift, and go to state 42
+    SEMICOLON  shift, and go to state 106
+
+    binary_logical_operator  go to state 44
+
+
+State 106
+
+   21 variable_declaration: IDENTIFIER ':' type IS expression SEMICOLON . variable_declaration
+
+    IDENTIFIER  shift, and go to state 96
+
+    IDENTIFIER  [reduce using rule 20 (variable_declaration)]
+    $default    reduce using rule 20 (variable_declaration)
+
+    variable_declaration  go to state 107
+
+
+State 107
+
+   21 variable_declaration: IDENTIFIER ':' type IS expression SEMICOLON variable_declaration .
+
+    $default  reduce using rule 21 (variable_declaration)

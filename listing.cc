@@ -24,7 +24,6 @@ void firstLine()
 
 void nextLine()
 {
-    displayErrors();
     lineNumber++;
     printf("%4d  ",lineNumber);
 }

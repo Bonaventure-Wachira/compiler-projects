@@ -38,6 +38,7 @@ void yyerror(const char* message);
 %token IS
 %token REDUCE
 %token RETURNS
+%token ASSIGN
 
 %token SEMICOLON
 %token IF
@@ -59,10 +60,29 @@ program:
     | statement
     ;
 
+
+
+statements: // Added statements rule
+    statement
+    | statement statements
+    ;
+
 function_declaration:
-    FUNCTION IDENTIFIER parameters RETURNS type body SEMICOLON
+    FUNCTION IDENTIFIER '(' optional_parameters ')' RETURNS type body SEMICOLON
     | error SEMICOLON
     ;
+
+optional_parameters:
+    /* empty */
+    | parameter_list
+    ;
+
+
+parameters_opt:
+    parameters
+    | %empty
+    ;
+
 
 parameters:
     '(' parameter_list ')'
@@ -87,14 +107,19 @@ type:
     ;
 
 body:
-    BEGIN_ statement_list END SEMICOLON
+    BEGIN_ variable_declaration statement_list END SEMICOLON
     ;
 
 statement:
-    expression SEMICOLON
+    IDENTIFIER ASSIGN expression SEMICOLON
     | reduce_statement
     | if_statement
     | case_statement
+    ;
+
+variable_declaration:
+    /* empty */
+    | IDENTIFIER ':' type IS expression SEMICOLON variable_declaration
     ;
 
 reduce_statement:
@@ -120,13 +145,13 @@ case_list:
     ;
 
 case:
-    WHEN INT_LITERAL ARROW statement |
-    WHEN error SEMICOLON
+    WHEN INT_LITERAL ARROW statement
+    | WHEN error SEMICOLON
     ;
 
 statement_list:
     statement
-    | statement SEMICOLON statement_list
+    | statement statement_list
     ;
 
 expression:
@@ -166,8 +191,6 @@ multiplying_operator:
     MULOP
     | REMOP
     ;
-
-
 
 binary_logical_operator:
     ANDOP
