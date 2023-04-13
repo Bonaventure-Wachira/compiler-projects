@@ -31,12 +31,20 @@ void nextLine()
 
 int lastLine()
 {
-	printf("\r");
-	displayErrors();
-	printf("     \n");
-	return totalErrors;
+    if (totalErrors == 0)
+    {
+        printf("\nCompiled successfully\n");
+    }
+    else
+    {
+        printf("\r");
+        displayErrors();
+        printf("     \n");
+    }
+    return totalErrors;
 }
-    
+
+
 void appendError(ErrorCategories errorCategory, string message)
 {
 	string messages[] = { "Lexical Error, Invalid Character ", "",

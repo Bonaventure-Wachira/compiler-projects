@@ -22,7 +22,6 @@ void yyerror(const char* message);
 %token BEGIN_ BOOLEAN END ENDREDUCE FUNCTION INTEGER IS REDUCE RETURNS
 
 %token ARROW
-%token RELOP
 %token REMOP
 %token EXPOP
 %token OROP
