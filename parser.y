@@ -56,7 +56,8 @@ variable:
 
 type:
 	INTEGER |
-	BOOLEAN ;
+	BOOLEAN |
+	REAL;
 
 body:
 	BEGIN_ statement_ END ';' ;
@@ -96,7 +97,8 @@ factor:
 primary:
 	'(' expression ')' |
 	INT_LITERAL | 
-	IDENTIFIER ;
+	IDENTIFIER |
+	REAL_LITERAL;
     
 %%
 

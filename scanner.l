@@ -32,6 +32,7 @@ punc        [\(\),:;]
 "="      { ECHO; return(RELOP); }
 "/="     { ECHO; return(RELOP); }
 ">"      { ECHO; return(RELOP); }
+"<"      { ECHO; return(RELOP); }
 ">="     { ECHO; return(RELOP); }
 "<="     { ECHO; return(RELOP); }
 "+"      { ECHO; return(ADDOP); }
