@@ -65,10 +65,8 @@ void displayErrors()
         errorQueue.pop();
     }
 
-    if (totalErrors > 0) {
-        printf("\nLexical Errors %d\nSyntax Errors %d\nSemantic Errors %d \n\n", lexicalErrors, syntaxErrors, semanticErrors);
-        lexicalErrors = 0;
-        syntaxErrors = 0;
-        semanticErrors = 0;
-    }
+    printf("\nLexical Errors %d\nSyntax Errors %d\nSemantic Errors %d \n\n", lexicalErrors, syntaxErrors, semanticErrors);
+    lexicalErrors = 0;
+    syntaxErrors = 0;
+    semanticErrors = 0;
 }

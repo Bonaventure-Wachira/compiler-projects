@@ -55,7 +55,13 @@ parameters:
     parameter_declaration ',' parameters ;
 
 parameter_declaration:
-    IDENTIFIER ':' type ;
+    IDENTIFIER ':' type |
+    error {
+        yyerrok;
+        yyclearin;
+    };
+
+
 
 variables:
     variable variables |
@@ -147,6 +153,7 @@ primary:
 void yyerror(const char* message)
 {
     appendError(SYNTAX, message);
+    
 }
 
 int main(int argc, char *argv[])    
