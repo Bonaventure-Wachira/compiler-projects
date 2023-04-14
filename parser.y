@@ -1,4 +1,3 @@
-
 %{
 
 #include <string>
@@ -38,40 +37,50 @@ void yyerror(const char* message);
 %token BOOL_LITERAL
 %token REAL_LITERAL
 
-
 %%
 
-function:	
-	function_header variables body ;
+function:    
+    function_header variables body ;
 
-	
-function_header:	
-	FUNCTION IDENTIFIER RETURNS type ';' ;
+    
+function_header:    
+    FUNCTION IDENTIFIER optional_parameters RETURNS type ';' ;
+
+optional_parameters:
+    parameters |
+    ;
+
+parameters:
+    parameter_declaration |
+    parameter_declaration ',' parameters ;
+
+parameter_declaration:
+    IDENTIFIER ':' type ;
 
 variables:
-	variable variables |
-	;
+    variable variables |
+    ;
 
 variable:
-	IDENTIFIER ':' type IS statement_ ;
+    IDENTIFIER ':' type IS statement_ ;
 
 type:
-	INTEGER |
-	BOOLEAN |
-	REAL;
+    INTEGER |
+    BOOLEAN |
+    REAL;
 
 body:
-	BEGIN_ statement_ END ';' ;
+    BEGIN_ statement_ END ';' ;
     
 statement_:
-	statement ';' |
-	error ';' ;
-	
+    statement ';' |
+    error ';' ;
+    
 statement:
-	expression |
-	REDUCE operator reductions ENDREDUCE |
-	if_statement |
-	case_statement;
+    expression |
+    REDUCE operator reductions ENDREDUCE |
+    if_statement |
+    case_statement;
 
 if_statement:
     IF expression THEN statement_ ELSE statement_ ENDIF ;
@@ -91,47 +100,52 @@ others_clause:
     OTHERS ARROW statement_;
 
 operator:
-	ADDOP |
-	MULOP ;
+    ADDOP |
+    MULOP |
+    REMOP ;
 
 reductions:
-	reductions statement_ |
-	;
-		    
+    reductions statement_ |
+    ;
+            
 expression:
-	expression ANDOP relation |
-	relation ;
+    expression ANDOP relation |
+    relation ;
 
 relation:
-	relation RELOP term |
-	term;
+    relation RELOP term |
+    term;
 
 term:
-	term ADDOP factor |
-	factor ;
+    term ADDOP factor |
+    factor ;
       
 factor:
-	factor MULOP primary |
-	primary ;
+    factor MULOP power |
+    power ;
+
+power:
+    primary EXPOP power |
+    primary;
 
 primary:
-	'(' expression ')' |
-	INT_LITERAL | 
-	IDENTIFIER |
-	REAL_LITERAL |
-	BOOL_LITERAL;
+    '(' expression ')' |
+    INT_LITERAL | 
+    IDENTIFIER |
+    REAL_LITERAL |
+    BOOL_LITERAL;
     
 %%
 
 void yyerror(const char* message)
 {
-	appendError(SYNTAX, message);
+    appendError(SYNTAX, message);
 }
 
 int main(int argc, char *argv[])    
 {
-	firstLine();
-	yyparse();
-	lastLine();
-	return 0;
-} 
+    firstLine();
+    yyparse();
+    lastLine();
+    return 0;
+}
