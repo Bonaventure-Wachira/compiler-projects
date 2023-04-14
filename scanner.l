@@ -1,5 +1,3 @@
-
-
 /* This file contains flex input file */
 
 %{
