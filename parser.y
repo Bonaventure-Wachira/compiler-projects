@@ -42,13 +42,14 @@ void yyerror(const char* message);
 %%
 
 function:	
-	function_header optional_variable body ;
+	function_header variables body ;
+
 	
 function_header:	
 	FUNCTION IDENTIFIER RETURNS type ';' ;
 
-optional_variable:
-	variable |
+variables:
+	variable variables |
 	;
 
 variable:
@@ -68,7 +69,26 @@ statement_:
 	
 statement:
 	expression |
-	REDUCE operator reductions ENDREDUCE ;
+	REDUCE operator reductions ENDREDUCE |
+	if_statement |
+	case_statement;
+
+if_statement:
+    IF expression THEN statement_ ELSE statement_ ENDIF ;
+
+case_statement:
+    CASE IDENTIFIER IS case_clauses ENDCASE;
+
+case_clauses:
+    when_clause case_clauses |
+    others_clause |
+    ;
+
+when_clause:
+    WHEN INT_LITERAL ARROW statement_;
+
+others_clause:
+    OTHERS ARROW statement_;
 
 operator:
 	ADDOP |
@@ -98,7 +118,8 @@ primary:
 	'(' expression ')' |
 	INT_LITERAL | 
 	IDENTIFIER |
-	REAL_LITERAL;
+	REAL_LITERAL |
+	BOOL_LITERAL;
     
 %%
 
