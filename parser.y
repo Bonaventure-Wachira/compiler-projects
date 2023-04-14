@@ -109,7 +109,11 @@ reductions:
     ;
             
 expression:
-    expression ANDOP relation |
+    expression OROP and_relation |
+    and_relation ;
+
+and_relation:
+    and_relation ANDOP relation |
     relation ;
 
 relation:
@@ -121,19 +125,22 @@ term:
     factor ;
       
 factor:
-    factor MULOP power |
-    power ;
+    factor MULOP exp_primary |
+    factor REMOP exp_primary |
+    exp_primary ;
 
-power:
-    primary EXPOP power |
-    primary;
+
+exp_primary:
+    primary EXPOP exp_primary |
+    primary ;
 
 primary:
     '(' expression ')' |
     INT_LITERAL | 
     IDENTIFIER |
     REAL_LITERAL |
-    BOOL_LITERAL;
+    BOOL_LITERAL|
+	NOTOP primary;
     
 %%
 
