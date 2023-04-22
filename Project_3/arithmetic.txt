@@ -1,0 +1,8 @@
+-- Test case to showcase additional arithmetic operators
+function testArithmetic returns integer;
+
+begin
+
+  reduce + (10 + 20 - 5) * 2 / 3 % 7; 
+  endreduce;
+end;

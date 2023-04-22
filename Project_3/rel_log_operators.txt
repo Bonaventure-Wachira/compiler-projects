@@ -1,0 +1,8 @@
+-- Test case to showcase additional relational and logical operators
+function testLogicalRelational returns integer;
+
+begin
+  reduce + (10 < 20 and 5 > 2 or 6 <= 4) * 2; 
+  endreduce;
+end;
+ 

@@ -1,0 +1,7 @@
+-- Test case to showcase real and boolean literals
+function testRealBooleanLiterals returns integer;
+
+begin
+  reduce + ((3.14 < 5.0 and true) or false) * 2;
+  endreduce;
+end;
