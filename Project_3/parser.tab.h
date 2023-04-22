@@ -51,22 +51,23 @@ extern int yydebug;
   {
     IDENTIFIER = 258,
     INT_LITERAL = 259,
-    ADDOP = 260,
-    MULOP = 261,
-    RELOP = 262,
-    ANDOP = 263,
-    OROP = 264,
-    REAL_LITERAL = 265,
-    BOOL_LITERAL = 266,
-    BEGIN_ = 267,
-    BOOLEAN = 268,
-    END = 269,
-    ENDREDUCE = 270,
-    FUNCTION = 271,
-    INTEGER = 272,
-    IS = 273,
-    REDUCE = 274,
-    RETURNS = 275
+    REAL_LITERAL = 260,
+    BOOLEAN_LITERAL = 261,
+    REAL = 262,
+    ADDOP = 263,
+    MULOP = 264,
+    RELOP = 265,
+    ANDOP = 266,
+    OROP = 267,
+    BEGIN_ = 268,
+    BOOLEAN = 269,
+    END = 270,
+    ENDREDUCE = 271,
+    FUNCTION = 272,
+    INTEGER = 273,
+    IS = 274,
+    REDUCE = 275,
+    RETURNS = 276
   };
 #endif
 
@@ -80,7 +81,7 @@ union YYSTYPE
 	Operators oper;
 	int value;
 
-#line 84 "parser.tab.h"
+#line 85 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

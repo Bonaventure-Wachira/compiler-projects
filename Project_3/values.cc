@@ -1,5 +1,3 @@
-
-
 // This file contains the bodies of the evaluation functions
 
 #include <string>
@@ -10,7 +8,6 @@ using namespace std;
 
 #include "values.h"
 #include "listing.h"
-
 
 int evaluateReduction(Operators operator_, int head, int tail)
 {

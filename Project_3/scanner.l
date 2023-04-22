@@ -20,8 +20,13 @@ id		[A-Za-z][A-Za-z0-9]*
 digit		[0-9]
 int		{digit}+
 punc		[\(\),:;]
-real		{digit}+"."{digit}*
-bool		(true|false)
+real		[-+]?{digit}*\.{digit}+([Ee][-+]?{digit}+)?|[-+]?{digit}+\.{digit}*([Ee][-+]?{digit}+)?|[-+]?{digit}+[Ee][-+]?{digit}+
+bool    true|false
+real_kw      real
+real_literal [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
+
+
+
 
 %%
 
@@ -42,6 +47,9 @@ bool		(true|false)
 "<>"        { ECHO; yylval.oper = NOT_EQUAL; return(RELOP); }
 "and"       { ECHO; return(ANDOP); }
 "or"        { ECHO; return(OROP); }
+
+
+
 begin		{ ECHO; return(BEGIN_); }
 boolean		{ ECHO; return(BOOLEAN); }
 end		{ ECHO; return(END); }
@@ -54,9 +62,13 @@ returns		{ ECHO; return(RETURNS); }
 and		{ ECHO; return(ANDOP); }
 
 {real}		{ ECHO; yylval.value = atof(yytext); return(REAL_LITERAL); }
-{bool}		{ ECHO; yylval.value = (strcmp(yytext, "true") == 0) ? 1 : 0; return(BOOL_LITERAL); }
+
+{real_literal} { ECHO; yylval.value = atof(yytext); return(REAL_LITERAL); }
+{real_kw}    { ECHO; return(REAL); }
+{bool}       { ECHO; yylval.value = strcmp(yytext, "true") == 0 ? 1 : 0; return(BOOLEAN_LITERAL); }
 {id}		{ ECHO; yylval.iden = (CharPtr)malloc(yyleng + 1); 
 			strcpy(yylval.iden, yytext); return(IDENTIFIER);}
+{int}		{ ECHO; yylval.value = atoi(yytext); return(INT_LITERAL); }
 {int}		{ ECHO; yylval.value = atoi(yytext); return(INT_LITERAL); }
 {punc}		{ ECHO; return(yytext[0]); }
 .		{ ECHO; appendError(LEXICAL, yytext); }

@@ -30,19 +30,22 @@ int result;
 }
 
 %token <iden> IDENTIFIER
-%token <value> INT_LITERAL
+%token <value> INT_LITERAL REAL_LITERAL
+%token <value> BOOLEAN_LITERAL
+%token REAL
+
+
 
 %token <oper> ADDOP MULOP RELOP
 %token ANDOP OROP
-%token <value> REAL_LITERAL
-%token <value> BOOL_LITERAL
 
 
 %token BEGIN_ BOOLEAN END ENDREDUCE FUNCTION INTEGER IS REDUCE RETURNS
 
-%type <value> body statement_ statement reductions expression relation term
-	factor primary
+
+%type <value> body statement_ statement reductions expression relation term factor primary
 %type <oper> operator
+
 
 
 
@@ -63,7 +66,8 @@ variable:
 
 type:
 	INTEGER |
-	BOOLEAN ;
+	BOOLEAN |
+	REAL;
 
 body:
 	BEGIN_ statement_ END ';' {$$ = $2;} ;
@@ -103,11 +107,10 @@ factor:
 
 primary:
 	'(' expression ')' {$$ = $2;} |
-	INT_LITERAL |
 	REAL_LITERAL |
-	BOOL_LITERAL |
+    BOOLEAN_LITERAL |
+	INT_LITERAL |
 	IDENTIFIER {if (!symbols.find($1, $$)) appendError(UNDECLARED, $1);} ;
-
 
 %%
 
@@ -123,4 +126,4 @@ int main(int argc, char *argv[])
 	if (lastLine() == 0)
 		cout << "Result = " << result << endl;
 	return 0;
-} 
+}
