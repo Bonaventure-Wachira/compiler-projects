@@ -44,9 +44,11 @@ real_literal [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 "<="        { ECHO; yylval.oper = LESS_EQUAL; return(RELOP); }
 ">="        { ECHO; yylval.oper = GREATER_EQUAL; return(RELOP); }
 "="         { ECHO; yylval.oper = EQUAL; return(RELOP); }
-"<>"        { ECHO; yylval.oper = NOT_EQUAL; return(RELOP); }
+"/="        { ECHO; yylval.oper = NOT_EQUAL; return(RELOP); }
 "and"       { ECHO; return(ANDOP); }
 "or"        { ECHO; return(OROP); }
+"not"        { ECHO; return(NOTOP); }
+
 
 
 

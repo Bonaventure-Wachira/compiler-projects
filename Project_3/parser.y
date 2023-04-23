@@ -34,20 +34,14 @@ int result;
 %token <value> BOOLEAN_LITERAL
 %token REAL
 
-
-
 %token <oper> ADDOP MULOP RELOP
 %token ANDOP OROP
-
+%token NOTOP
 
 %token BEGIN_ BOOLEAN END ENDREDUCE FUNCTION INTEGER IS REDUCE RETURNS
 
-
-%type <value> body statement_ statement reductions expression relation term factor primary
+%type <value> body statement_ statement reductions expression relation not_expression comparison arithmetic_expression factor primary logical_expression
 %type <oper> operator
-
-
-
 
 %%
 
@@ -89,21 +83,32 @@ reductions:
 	{$$ = $<oper>0 == ADD ? 0 : 1;} ;
 
 expression:
-    expression ANDOP relation {$$ = $1 && $3;} |
-    expression OROP relation {$$ = $1 || $3;} |
+    logical_expression;
+
+logical_expression:
+    logical_expression OROP relation {$$ = $1 || $3;} |
     relation;
 
 relation:
-	relation RELOP term {$$ = evaluateRelational($1, $2, $3);} |
-	term ;
+    relation ANDOP not_expression {$$ = $1 && $3;} |
+    not_expression;
 
-term:
-	term ADDOP factor {$$ = evaluateArithmetic($1, $2, $3);} |
-	factor ;
-      
+not_expression:
+    NOTOP comparison {$$ = !$2;} |
+    comparison;
+
+
+comparison:
+    arithmetic_expression RELOP arithmetic_expression {$$ = evaluateComparison($1, $2, $3);} |
+    arithmetic_expression;
+
+arithmetic_expression:
+    arithmetic_expression ADDOP factor {$$ = evaluateArithmetic($1, $2, $3);} |
+    factor;
+
 factor:
-	factor MULOP primary {$$ = evaluateArithmetic($1, $2, $3);} |
-	primary ;
+    factor MULOP primary {$$ = evaluateArithmetic($1, $2, $3);} |
+    primary;
 
 primary:
 	'(' expression ')' {$$ = $2;} |

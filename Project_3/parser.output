@@ -29,104 +29,121 @@ Grammar
    16 reductions: reductions statement_
    17           | %empty
 
-   18 expression: expression ANDOP relation
-   19           | expression OROP relation
-   20           | relation
+   18 expression: logical_expression
 
-   21 relation: relation RELOP term
-   22         | term
+   19 logical_expression: logical_expression OROP relation
+   20                   | relation
 
-   23 term: term ADDOP factor
-   24     | factor
+   21 relation: relation ANDOP not_expression
+   22         | not_expression
 
-   25 factor: factor MULOP primary
-   26       | primary
+   23 not_expression: NOTOP comparison
+   24               | comparison
 
-   27 primary: '(' expression ')'
-   28        | REAL_LITERAL
-   29        | BOOLEAN_LITERAL
-   30        | INT_LITERAL
-   31        | IDENTIFIER
+   25 comparison: arithmetic_expression RELOP arithmetic_expression
+   26           | arithmetic_expression
+
+   27 arithmetic_expression: arithmetic_expression ADDOP factor
+   28                      | factor
+
+   29 factor: factor MULOP primary
+   30       | primary
+
+   31 primary: '(' expression ')'
+   32        | REAL_LITERAL
+   33        | BOOLEAN_LITERAL
+   34        | INT_LITERAL
+   35        | IDENTIFIER
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '(' (40) 27
-    ')' (41) 27
+    '(' (40) 31
+    ')' (41) 31
     ':' (58) 5
     ';' (59) 2 9 10 11
     error (256) 11
-    IDENTIFIER <iden> (258) 2 5 31
-    INT_LITERAL <value> (259) 30
-    REAL_LITERAL <value> (260) 28
-    BOOLEAN_LITERAL <value> (261) 29
+    IDENTIFIER <iden> (258) 2 5 35
+    INT_LITERAL <value> (259) 34
+    REAL_LITERAL <value> (260) 32
+    BOOLEAN_LITERAL <value> (261) 33
     REAL (262) 8
-    ADDOP <oper> (263) 14 23
-    MULOP <oper> (264) 15 25
-    RELOP <oper> (265) 21
-    ANDOP (266) 18
+    ADDOP <oper> (263) 14 27
+    MULOP <oper> (264) 15 29
+    RELOP <oper> (265) 25
+    ANDOP (266) 21
     OROP (267) 19
-    BEGIN_ (268) 9
-    BOOLEAN (269) 7
-    END (270) 9
-    ENDREDUCE (271) 13
-    FUNCTION (272) 2
-    INTEGER (273) 6
-    IS (274) 5
-    REDUCE (275) 13
-    RETURNS (276) 2
+    NOTOP (268) 23
+    BEGIN_ (269) 9
+    BOOLEAN (270) 7
+    END (271) 9
+    ENDREDUCE (272) 13
+    FUNCTION (273) 2
+    INTEGER (274) 6
+    IS (275) 5
+    REDUCE (276) 13
+    RETURNS (277) 2
 
 
 Nonterminals, with rules where they appear
 
-    $accept (26)
+    $accept (27)
         on left: 0
-    function (27)
+    function (28)
         on left: 1
         on right: 0
-    function_header (28)
+    function_header (29)
         on left: 2
         on right: 1
-    optional_variable (29)
+    optional_variable (30)
         on left: 3 4
         on right: 1
-    variable (30)
+    variable (31)
         on left: 5
         on right: 3
-    type (31)
+    type (32)
         on left: 6 7 8
         on right: 2 5
-    body <value> (32)
+    body <value> (33)
         on left: 9
         on right: 1
-    statement_ <value> (33)
+    statement_ <value> (34)
         on left: 10 11
         on right: 5 9 16
-    statement <value> (34)
+    statement <value> (35)
         on left: 12 13
         on right: 10
-    operator <oper> (35)
+    operator <oper> (36)
         on left: 14 15
         on right: 13
-    reductions <value> (36)
+    reductions <value> (37)
         on left: 16 17
         on right: 13 16
-    expression <value> (37)
-        on left: 18 19 20
-        on right: 12 18 19 27
-    relation <value> (38)
+    expression <value> (38)
+        on left: 18
+        on right: 12 31
+    logical_expression <value> (39)
+        on left: 19 20
+        on right: 18 19
+    relation <value> (40)
         on left: 21 22
-        on right: 18 19 20 21
-    term <value> (39)
+        on right: 19 20 21
+    not_expression <value> (41)
         on left: 23 24
-        on right: 21 22 23
-    factor <value> (40)
+        on right: 21 22
+    comparison <value> (42)
         on left: 25 26
-        on right: 23 24 25
-    primary <value> (41)
-        on left: 27 28 29 30 31
-        on right: 25 26
+        on right: 23 24
+    arithmetic_expression <value> (43)
+        on left: 27 28
+        on right: 25 26 27
+    factor <value> (44)
+        on left: 29 30
+        on right: 27 28 29
+    primary <value> (45)
+        on left: 31 32 33 34 35
+        on right: 29 30
 
 
 State 0
@@ -233,16 +250,20 @@ State 11
     INT_LITERAL      shift, and go to state 20
     REAL_LITERAL     shift, and go to state 21
     BOOLEAN_LITERAL  shift, and go to state 22
-    REDUCE           shift, and go to state 23
-    '('              shift, and go to state 24
+    NOTOP            shift, and go to state 23
+    REDUCE           shift, and go to state 24
+    '('              shift, and go to state 25
 
-    statement_  go to state 25
-    statement   go to state 26
-    expression  go to state 27
-    relation    go to state 28
-    term        go to state 29
-    factor      go to state 30
-    primary     go to state 31
+    statement_             go to state 26
+    statement              go to state 27
+    expression             go to state 28
+    logical_expression     go to state 29
+    relation               go to state 30
+    not_expression         go to state 31
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
 
 
 State 12
@@ -277,149 +298,190 @@ State 16
 
     2 function_header: FUNCTION IDENTIFIER RETURNS type . ';'
 
-    ';'  shift, and go to state 32
+    ';'  shift, and go to state 36
 
 
 State 17
 
     5 variable: IDENTIFIER ':' type . IS statement_
 
-    IS  shift, and go to state 33
+    IS  shift, and go to state 37
 
 
 State 18
 
    11 statement_: error . ';'
 
-    ';'  shift, and go to state 34
+    ';'  shift, and go to state 38
 
 
 State 19
 
-   31 primary: IDENTIFIER .
+   35 primary: IDENTIFIER .
 
-    $default  reduce using rule 31 (primary)
+    $default  reduce using rule 35 (primary)
 
 
 State 20
 
-   30 primary: INT_LITERAL .
+   34 primary: INT_LITERAL .
 
-    $default  reduce using rule 30 (primary)
+    $default  reduce using rule 34 (primary)
 
 
 State 21
 
-   28 primary: REAL_LITERAL .
+   32 primary: REAL_LITERAL .
 
-    $default  reduce using rule 28 (primary)
+    $default  reduce using rule 32 (primary)
 
 
 State 22
 
-   29 primary: BOOLEAN_LITERAL .
+   33 primary: BOOLEAN_LITERAL .
 
-    $default  reduce using rule 29 (primary)
+    $default  reduce using rule 33 (primary)
 
 
 State 23
 
-   13 statement: REDUCE . operator reductions ENDREDUCE
-
-    ADDOP  shift, and go to state 35
-    MULOP  shift, and go to state 36
-
-    operator  go to state 37
-
-
-State 24
-
-   27 primary: '(' . expression ')'
+   23 not_expression: NOTOP . comparison
 
     IDENTIFIER       shift, and go to state 19
     INT_LITERAL      shift, and go to state 20
     REAL_LITERAL     shift, and go to state 21
     BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
+    '('              shift, and go to state 25
 
-    expression  go to state 38
-    relation    go to state 28
-    term        go to state 29
-    factor      go to state 30
-    primary     go to state 31
+    comparison             go to state 39
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
+
+
+State 24
+
+   13 statement: REDUCE . operator reductions ENDREDUCE
+
+    ADDOP  shift, and go to state 40
+    MULOP  shift, and go to state 41
+
+    operator  go to state 42
 
 
 State 25
 
-    9 body: BEGIN_ statement_ . END ';'
+   31 primary: '(' . expression ')'
 
-    END  shift, and go to state 39
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    NOTOP            shift, and go to state 23
+    '('              shift, and go to state 25
+
+    expression             go to state 43
+    logical_expression     go to state 29
+    relation               go to state 30
+    not_expression         go to state 31
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
 
 
 State 26
 
-   10 statement_: statement . ';'
+    9 body: BEGIN_ statement_ . END ';'
 
-    ';'  shift, and go to state 40
+    END  shift, and go to state 44
 
 
 State 27
 
-   12 statement: expression .
-   18 expression: expression . ANDOP relation
-   19           | expression . OROP relation
+   10 statement_: statement . ';'
 
-    ANDOP  shift, and go to state 41
-    OROP   shift, and go to state 42
-
-    $default  reduce using rule 12 (statement)
+    ';'  shift, and go to state 45
 
 
 State 28
 
-   20 expression: relation .
-   21 relation: relation . RELOP term
+   12 statement: expression .
 
-    RELOP  shift, and go to state 43
-
-    $default  reduce using rule 20 (expression)
+    $default  reduce using rule 12 (statement)
 
 
 State 29
 
-   22 relation: term .
-   23 term: term . ADDOP factor
+   18 expression: logical_expression .
+   19 logical_expression: logical_expression . OROP relation
 
-    ADDOP  shift, and go to state 44
+    OROP  shift, and go to state 46
 
-    $default  reduce using rule 22 (relation)
+    $default  reduce using rule 18 (expression)
 
 
 State 30
 
-   24 term: factor .
-   25 factor: factor . MULOP primary
+   20 logical_expression: relation .
+   21 relation: relation . ANDOP not_expression
 
-    MULOP  shift, and go to state 45
+    ANDOP  shift, and go to state 47
 
-    $default  reduce using rule 24 (term)
+    $default  reduce using rule 20 (logical_expression)
 
 
 State 31
 
-   26 factor: primary .
+   22 relation: not_expression .
 
-    $default  reduce using rule 26 (factor)
+    $default  reduce using rule 22 (relation)
 
 
 State 32
+
+   24 not_expression: comparison .
+
+    $default  reduce using rule 24 (not_expression)
+
+
+State 33
+
+   25 comparison: arithmetic_expression . RELOP arithmetic_expression
+   26           | arithmetic_expression .
+   27 arithmetic_expression: arithmetic_expression . ADDOP factor
+
+    ADDOP  shift, and go to state 48
+    RELOP  shift, and go to state 49
+
+    $default  reduce using rule 26 (comparison)
+
+
+State 34
+
+   28 arithmetic_expression: factor .
+   29 factor: factor . MULOP primary
+
+    MULOP  shift, and go to state 50
+
+    $default  reduce using rule 28 (arithmetic_expression)
+
+
+State 35
+
+   30 factor: primary .
+
+    $default  reduce using rule 30 (factor)
+
+
+State 36
 
     2 function_header: FUNCTION IDENTIFIER RETURNS type ';' .
 
     $default  reduce using rule 2 (function_header)
 
 
-State 33
+State 37
 
     5 variable: IDENTIFIER ':' type IS . statement_
 
@@ -428,155 +490,167 @@ State 33
     INT_LITERAL      shift, and go to state 20
     REAL_LITERAL     shift, and go to state 21
     BOOLEAN_LITERAL  shift, and go to state 22
-    REDUCE           shift, and go to state 23
-    '('              shift, and go to state 24
+    NOTOP            shift, and go to state 23
+    REDUCE           shift, and go to state 24
+    '('              shift, and go to state 25
 
-    statement_  go to state 46
-    statement   go to state 26
-    expression  go to state 27
-    relation    go to state 28
-    term        go to state 29
-    factor      go to state 30
-    primary     go to state 31
+    statement_             go to state 51
+    statement              go to state 27
+    expression             go to state 28
+    logical_expression     go to state 29
+    relation               go to state 30
+    not_expression         go to state 31
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
 
 
-State 34
+State 38
 
    11 statement_: error ';' .
 
     $default  reduce using rule 11 (statement_)
 
 
-State 35
+State 39
+
+   23 not_expression: NOTOP comparison .
+
+    $default  reduce using rule 23 (not_expression)
+
+
+State 40
 
    14 operator: ADDOP .
 
     $default  reduce using rule 14 (operator)
 
 
-State 36
+State 41
 
    15 operator: MULOP .
 
     $default  reduce using rule 15 (operator)
 
 
-State 37
+State 42
 
    13 statement: REDUCE operator . reductions ENDREDUCE
 
     $default  reduce using rule 17 (reductions)
 
-    reductions  go to state 47
+    reductions  go to state 52
 
 
-State 38
+State 43
 
-   18 expression: expression . ANDOP relation
-   19           | expression . OROP relation
-   27 primary: '(' expression . ')'
+   31 primary: '(' expression . ')'
 
-    ANDOP  shift, and go to state 41
-    OROP   shift, and go to state 42
-    ')'    shift, and go to state 48
+    ')'  shift, and go to state 53
 
 
-State 39
+State 44
 
     9 body: BEGIN_ statement_ END . ';'
 
-    ';'  shift, and go to state 49
+    ';'  shift, and go to state 54
 
 
-State 40
+State 45
 
    10 statement_: statement ';' .
 
     $default  reduce using rule 10 (statement_)
 
 
-State 41
-
-   18 expression: expression ANDOP . relation
-
-    IDENTIFIER       shift, and go to state 19
-    INT_LITERAL      shift, and go to state 20
-    REAL_LITERAL     shift, and go to state 21
-    BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
-
-    relation  go to state 50
-    term      go to state 29
-    factor    go to state 30
-    primary   go to state 31
-
-
-State 42
-
-   19 expression: expression OROP . relation
-
-    IDENTIFIER       shift, and go to state 19
-    INT_LITERAL      shift, and go to state 20
-    REAL_LITERAL     shift, and go to state 21
-    BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
-
-    relation  go to state 51
-    term      go to state 29
-    factor    go to state 30
-    primary   go to state 31
-
-
-State 43
-
-   21 relation: relation RELOP . term
-
-    IDENTIFIER       shift, and go to state 19
-    INT_LITERAL      shift, and go to state 20
-    REAL_LITERAL     shift, and go to state 21
-    BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
-
-    term     go to state 52
-    factor   go to state 30
-    primary  go to state 31
-
-
-State 44
-
-   23 term: term ADDOP . factor
-
-    IDENTIFIER       shift, and go to state 19
-    INT_LITERAL      shift, and go to state 20
-    REAL_LITERAL     shift, and go to state 21
-    BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
-
-    factor   go to state 53
-    primary  go to state 31
-
-
-State 45
-
-   25 factor: factor MULOP . primary
-
-    IDENTIFIER       shift, and go to state 19
-    INT_LITERAL      shift, and go to state 20
-    REAL_LITERAL     shift, and go to state 21
-    BOOLEAN_LITERAL  shift, and go to state 22
-    '('              shift, and go to state 24
-
-    primary  go to state 54
-
-
 State 46
+
+   19 logical_expression: logical_expression OROP . relation
+
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    NOTOP            shift, and go to state 23
+    '('              shift, and go to state 25
+
+    relation               go to state 55
+    not_expression         go to state 31
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
+
+
+State 47
+
+   21 relation: relation ANDOP . not_expression
+
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    NOTOP            shift, and go to state 23
+    '('              shift, and go to state 25
+
+    not_expression         go to state 56
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
+
+
+State 48
+
+   27 arithmetic_expression: arithmetic_expression ADDOP . factor
+
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    '('              shift, and go to state 25
+
+    factor   go to state 57
+    primary  go to state 35
+
+
+State 49
+
+   25 comparison: arithmetic_expression RELOP . arithmetic_expression
+
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    '('              shift, and go to state 25
+
+    arithmetic_expression  go to state 58
+    factor                 go to state 34
+    primary                go to state 35
+
+
+State 50
+
+   29 factor: factor MULOP . primary
+
+    IDENTIFIER       shift, and go to state 19
+    INT_LITERAL      shift, and go to state 20
+    REAL_LITERAL     shift, and go to state 21
+    BOOLEAN_LITERAL  shift, and go to state 22
+    '('              shift, and go to state 25
+
+    primary  go to state 59
+
+
+State 51
 
     5 variable: IDENTIFIER ':' type IS statement_ .
 
     $default  reduce using rule 5 (variable)
 
 
-State 47
+State 52
 
    13 statement: REDUCE operator reductions . ENDREDUCE
    16 reductions: reductions . statement_
@@ -586,88 +660,89 @@ State 47
     INT_LITERAL      shift, and go to state 20
     REAL_LITERAL     shift, and go to state 21
     BOOLEAN_LITERAL  shift, and go to state 22
-    ENDREDUCE        shift, and go to state 55
-    REDUCE           shift, and go to state 23
-    '('              shift, and go to state 24
+    NOTOP            shift, and go to state 23
+    ENDREDUCE        shift, and go to state 60
+    REDUCE           shift, and go to state 24
+    '('              shift, and go to state 25
 
-    statement_  go to state 56
-    statement   go to state 26
-    expression  go to state 27
-    relation    go to state 28
-    term        go to state 29
-    factor      go to state 30
-    primary     go to state 31
-
-
-State 48
-
-   27 primary: '(' expression ')' .
-
-    $default  reduce using rule 27 (primary)
+    statement_             go to state 61
+    statement              go to state 27
+    expression             go to state 28
+    logical_expression     go to state 29
+    relation               go to state 30
+    not_expression         go to state 31
+    comparison             go to state 32
+    arithmetic_expression  go to state 33
+    factor                 go to state 34
+    primary                go to state 35
 
 
-State 49
+State 53
+
+   31 primary: '(' expression ')' .
+
+    $default  reduce using rule 31 (primary)
+
+
+State 54
 
     9 body: BEGIN_ statement_ END ';' .
 
     $default  reduce using rule 9 (body)
 
 
-State 50
+State 55
 
-   18 expression: expression ANDOP relation .
-   21 relation: relation . RELOP term
+   19 logical_expression: logical_expression OROP relation .
+   21 relation: relation . ANDOP not_expression
 
-    RELOP  shift, and go to state 43
+    ANDOP  shift, and go to state 47
 
-    $default  reduce using rule 18 (expression)
-
-
-State 51
-
-   19 expression: expression OROP relation .
-   21 relation: relation . RELOP term
-
-    RELOP  shift, and go to state 43
-
-    $default  reduce using rule 19 (expression)
+    $default  reduce using rule 19 (logical_expression)
 
 
-State 52
+State 56
 
-   21 relation: relation RELOP term .
-   23 term: term . ADDOP factor
-
-    ADDOP  shift, and go to state 44
+   21 relation: relation ANDOP not_expression .
 
     $default  reduce using rule 21 (relation)
 
 
-State 53
+State 57
 
-   23 term: term ADDOP factor .
-   25 factor: factor . MULOP primary
+   27 arithmetic_expression: arithmetic_expression ADDOP factor .
+   29 factor: factor . MULOP primary
 
-    MULOP  shift, and go to state 45
+    MULOP  shift, and go to state 50
 
-    $default  reduce using rule 23 (term)
-
-
-State 54
-
-   25 factor: factor MULOP primary .
-
-    $default  reduce using rule 25 (factor)
+    $default  reduce using rule 27 (arithmetic_expression)
 
 
-State 55
+State 58
+
+   25 comparison: arithmetic_expression RELOP arithmetic_expression .
+   27 arithmetic_expression: arithmetic_expression . ADDOP factor
+
+    ADDOP  shift, and go to state 48
+
+    $default  reduce using rule 25 (comparison)
+
+
+State 59
+
+   29 factor: factor MULOP primary .
+
+    $default  reduce using rule 29 (factor)
+
+
+State 60
 
    13 statement: REDUCE operator reductions ENDREDUCE .
 
     $default  reduce using rule 13 (statement)
 
 
-State 56
+State 61
 
    16 reductions: reductions statement_ .
 

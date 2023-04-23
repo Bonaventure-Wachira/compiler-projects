@@ -59,15 +59,16 @@ extern int yydebug;
     RELOP = 265,
     ANDOP = 266,
     OROP = 267,
-    BEGIN_ = 268,
-    BOOLEAN = 269,
-    END = 270,
-    ENDREDUCE = 271,
-    FUNCTION = 272,
-    INTEGER = 273,
-    IS = 274,
-    REDUCE = 275,
-    RETURNS = 276
+    NOTOP = 268,
+    BEGIN_ = 269,
+    BOOLEAN = 270,
+    END = 271,
+    ENDREDUCE = 272,
+    FUNCTION = 273,
+    INTEGER = 274,
+    IS = 275,
+    REDUCE = 276,
+    RETURNS = 277
   };
 #endif
 
@@ -81,7 +82,7 @@ union YYSTYPE
 	Operators oper;
 	int value;
 
-#line 85 "parser.tab.h"
+#line 86 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

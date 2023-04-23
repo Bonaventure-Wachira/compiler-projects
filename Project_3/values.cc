@@ -68,3 +68,23 @@ int evaluateArithmetic(int left, Operators operator_, int right)
     }
     return result;
 }
+
+int evaluateComparison(int left, Operators oper, int right) {
+    switch (oper) {
+        case 1: // LT
+            return left < right;
+        case 2: // LTE
+            return left <= right;
+        case 3: // GT
+            return left > right;
+        case 4: // GTE
+            return left >= right;
+        case 5: // EQ
+            return left == right;
+        case 6: // NEQ
+            return left != right;
+        default:
+            return 0;
+    }
+}
+
