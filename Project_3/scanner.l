@@ -62,9 +62,13 @@ is		{ ECHO; return(IS); }
 reduce		{ ECHO; return(REDUCE); }
 returns		{ ECHO; return(RETURNS); }
 and		{ ECHO; return(ANDOP); }
+if          { ECHO; return(IF); }
+then        { ECHO; return(THEN); }
+else        { ECHO; return(ELSE); }
+endif       { ECHO; return(ENDIF); }
+
 
 {real}		{ ECHO; yylval.value = atof(yytext); return(REAL_LITERAL); }
-
 {real_literal} { ECHO; yylval.value = atof(yytext); return(REAL_LITERAL); }
 {real_kw}    { ECHO; return(REAL); }
 {bool}       { ECHO; yylval.value = strcmp(yytext, "true") == 0 ? 1 : 0; return(BOOLEAN_LITERAL); }

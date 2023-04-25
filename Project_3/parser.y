@@ -18,6 +18,7 @@ Symbols<int> symbols;
 
 int result;
 
+
 %}
 
 %define parse.error verbose
@@ -39,21 +40,28 @@ int result;
 %token NOTOP
 
 %token BEGIN_ BOOLEAN END ENDREDUCE FUNCTION INTEGER IS REDUCE RETURNS
+%token IF THEN ELSE ENDIF
 
-%type <value> body statement_ statement reductions expression relation not_expression comparison arithmetic_expression factor primary logical_expression
+
+%type <value> body statement_ statement reductions expression relation not_expression comparison arithmetic_expression factor primary logical_expression if_statement
 %type <oper> operator
 
 %%
 
-function:	
-	function_header optional_variable body {result = $3;} ;
+function:    
+    function_header optional_variables body {result = $3;} ;
 	
 function_header:	
 	FUNCTION IDENTIFIER RETURNS type ';' ;
 
-optional_variable:
-	variable |
-	;
+optional_variables:
+    variables |
+    ;
+
+variables:
+    variable variables |
+    variable;
+
 
 variable:	
 	IDENTIFIER ':' type IS statement_ {symbols.insert($1, $5);} ;
@@ -67,12 +75,26 @@ body:
 	BEGIN_ statement_ END ';' {$$ = $2;} ;
     
 statement_:
-	statement ';' |
-	error ';' {$$ = 0;} ;
-	
+    statement ';' {$$ = $1;} |
+    if_statement |
+    error ';' {$$ = 0;} ;
+
+
 statement:
-	expression |
-	REDUCE operator reductions ENDREDUCE {$$ = $3;} ;
+    expression |
+    REDUCE operator reductions ENDREDUCE {$$ = $3;} |
+    if_statement ;
+
+if_statement:
+    IF expression THEN statement_ ELSE statement_ ENDIF
+    {
+        if ($2) { $$ = $4; }
+        else { $$ = $6; }
+    } ;
+
+
+
+
 
 operator:
 	ADDOP |
@@ -111,11 +133,12 @@ factor:
     primary;
 
 primary:
-	'(' expression ')' {$$ = $2;} |
-	REAL_LITERAL |
+    '(' expression ')' {$$ = $2;} |
+    REAL_LITERAL |
     BOOLEAN_LITERAL |
-	INT_LITERAL |
-	IDENTIFIER {if (!symbols.find($1, $$)) appendError(UNDECLARED, $1);} ;
+    INT_LITERAL |
+    IDENTIFIER {if (!symbols.find($1, $$)) appendError(UNDECLARED, $1);} |
+    '(' if_statement ')' {$$ = $2;} ;
 
 %%
 

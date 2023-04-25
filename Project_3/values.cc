@@ -47,7 +47,7 @@ int evaluateRelational(int left, Operators operator_, int right)
 
 int evaluateArithmetic(int left, Operators operator_, int right)
 {
-    int result;
+    double result;
     switch (operator_)
     {
         case ADD:
@@ -63,11 +63,12 @@ int evaluateArithmetic(int left, Operators operator_, int right)
             result = left / right;
             break;
         case MODULUS:
-            result = left % right;
+            result = fmod(left, right);
             break;
     }
-    return result;
+    return static_cast<int>(round(result));
 }
+
 
 int evaluateComparison(int left, Operators oper, int right) {
     switch (oper) {

@@ -68,7 +68,11 @@ extern int yydebug;
     INTEGER = 274,
     IS = 275,
     REDUCE = 276,
-    RETURNS = 277
+    RETURNS = 277,
+    IF = 278,
+    THEN = 279,
+    ELSE = 280,
+    ENDIF = 281
   };
 #endif
 
@@ -76,13 +80,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 26 "parser.y"
+#line 27 "parser.y"
 
 	CharPtr iden;
 	Operators oper;
 	int value;
 
-#line 86 "parser.tab.h"
+#line 90 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
